@@ -1,0 +1,10 @@
+device="$(iw dev | grep Interface | awk '{print $2}')"
+ipaddr="$(ifconfig $device | grep -w inet | awk '{print $2}')"
+for i in {225..235}
+do
+    ping -c1 -t1 ${ipaddr%.*}.$i &> /dev/null
+    if [ $? -eq 0 ]; then
+        mac="$(ip neigh show | grep -w ${ipaddr%.*}.$i | awk '{print $5}')"
+        echo ${ipaddr%.*}.$i $mac
+    fi
+done
